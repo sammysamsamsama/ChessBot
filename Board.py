@@ -238,10 +238,10 @@ class Board:
                     break
         elif piece is King:
             if not self.threatened(piece.r - 1, piece.c - 1):
-                piece.moves.append((piece.r - 1, piece.c -1))
+                piece.moves.append((piece.r - 1, piece.c - 1))
             if not self.threatened(piece.r - 1, piece.c):
                 piece.moves.append((piece.r - 1, piece.c))
-            if not self.threatened(piece.r -1, piece.c + 1):
+            if not self.threatened(piece.r - 1, piece.c + 1):
                 piece.moves.append((piece.r - 1, piece.c + 1))
             if not self.threatened(piece.r, piece.c - 1):
                 piece.moves.append((piece.r, piece.c - 1))

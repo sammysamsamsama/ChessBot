@@ -22,6 +22,10 @@ class Board:
         return False
 
     def set_moves(self, piece):
+        """
+
+        :rtype: list
+        """
         if isinstance(piece, Piece):
             if isinstance(piece, Pawn):
                 if piece.color is "b":

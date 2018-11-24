@@ -14,10 +14,10 @@ class Board:
                 position_row.append(columns[c] + str(r + 1))
             self.positions.append(position_row)
 
-    def threatened(self, r, c):
+    def threatened(self, color, r, c):
         for row in self.board_pieces:
             for piece in row:
-                if piece is not None and (r, c) in piece.moves:
+                if piece is not None and piece.color is not color and (r, c) in piece.moves:
                     return True
         return False
 
@@ -204,23 +204,23 @@ class Board:
                     else:
                         break
             elif isinstance(piece, King):
-                if not self.threatened(piece.r - 1, piece.c - 1):
+                if not self.threatened(piece.color, piece.r - 1, piece.c - 1):
                     piece.moves.append((piece.r - 1, piece.c - 1))
-                if not self.threatened(piece.r - 1, piece.c):
+                if not self.threatened(piece.color, piece.r - 1, piece.c):
                     piece.moves.append((piece.r - 1, piece.c))
-                if not self.threatened(piece.r - 1, piece.c + 1):
+                if not self.threatened(piece.color, piece.r - 1, piece.c + 1):
                     piece.moves.append((piece.r - 1, piece.c + 1))
-                if not self.threatened(piece.r, piece.c - 1):
+                if not self.threatened(piece.color, piece.r, piece.c - 1):
                     piece.moves.append((piece.r, piece.c - 1))
-                if not self.threatened(piece.r, piece.c + 1):
+                if not self.threatened(piece.color, piece.r, piece.c + 1):
                     piece.moves.append((piece.r, piece.c + 1))
-                if not self.threatened(piece.r + 1, piece.c - 1):
+                if not self.threatened(piece.color, piece.r + 1, piece.c - 1):
                     piece.moves.append((piece.r + 1, piece.c - 1))
-                if not self.threatened(piece.r + 1, piece.c):
+                if not self.threatened(piece.color, piece.r + 1, piece.c):
                     piece.moves.append((piece.r + 1, piece.c))
-                if not self.threatened(piece.r + 1, piece.c + 1):
+                if not self.threatened(piece.color, piece.r + 1, piece.c + 1):
                     piece.moves.append((piece.r + 1, piece.c + 1))
-                if not piece.has_moved and not self.threatened(piece.r, piece.c) and \
+                if not piece.has_moved and not self.threatened(piece.color, piece.r, piece.c) and \
                         isinstance(self.board_pieces[piece.r][0], Rook) and \
                         self.board_pieces[piece.r][0].color is piece.color and not \
                         self.board_pieces[piece.r][0].has_moved and \
@@ -228,7 +228,7 @@ class Board:
                         self.board_pieces[piece.r][2] is None and \
                         self.board_pieces[piece.r][3] is None:
                     piece.moves.append((piece.r, piece.c - 2))
-                if not piece.has_moved and not self.threatened(piece.r, piece.c) and \
+                if not piece.has_moved and not self.threatened(piece.color, piece.r, piece.c) and \
                         isinstance(self.board_pieces[piece.r][7], Rook) and \
                         self.board_pieces[piece.r][7].color is piece.color and not \
                         self.board_pieces[piece.r][7].has_moved and \
@@ -236,7 +236,6 @@ class Board:
                         self.board_pieces[piece.r][5] is None and \
                         self.board_pieces[piece.r][4] is None:
                     piece.moves.append((piece.r, piece.c - 2))
-
             for position in list(piece.moves):
                 r, c = position
                 if r < 0 or c < 0 or r > 7 or c > 7:

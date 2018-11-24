@@ -4,6 +4,7 @@ import copy
 
 class Board:
     def __init__(self):
+        self.pieces = []
         self.board_pieces = []
         self.positions = []
 
@@ -15,238 +16,239 @@ class Board:
             self.positions.append(position_row)
 
     def threatened(self, color, r, c):
-        for row in self.board_pieces:
-            for piece in row:
-                if piece is not None and piece.color is not color and (r, c) in piece.moves:
+        # is this position threatened by a piece of this color
+        for rw in self.board_pieces:
+            for p in rw:
+                if p is not None and p.color is not color and (r, c) in p.moves:
                     return True
         return False
 
-    def set_moves(self, piece):
+    def set_moves(self, p):
         """
 
         :rtype: list
         """
-        if isinstance(piece, Piece):
-            if isinstance(piece, Pawn):
-                if piece.color is "b":
-                    if not piece.has_moved and self.board_pieces[piece.r + 1][piece.c] is None and \
-                            self.board_pieces[piece.r + 2][piece.c] is None:
-                        piece.moves.append((piece.r + 2, piece.c))
-                    if self.board_pieces[piece.r + 1][piece.c] is None:
-                        piece.moves.append((piece.r + 1, piece.c))
-                    if piece.c is not 0 and piece.c is not 7:
-                        if isinstance(self.board_pieces[piece.r + 1][piece.c + 1], Piece) and \
-                                self.board_pieces[piece.r + 1][piece.c + 1].color is not piece.color:
-                            piece.moves.append((piece.r + 1, piece.c + 1))
-                        if isinstance(self.board_pieces[piece.r + 1][piece.c - 1], Piece) and \
-                                self.board_pieces[piece.r + 1][piece.c - 1].color is not piece.color:
-                            piece.moves.append((piece.r + 1, piece.c - 1))
-                    if piece.c is 0:
-                        if isinstance(self.board_pieces[piece.r + 1][piece.c + 1], Piece) and \
-                                self.board_pieces[piece.r + 1][piece.c + 1].color is not piece.color:
-                            piece.moves.append((piece.r + 1, piece.c + 1))
-                    if piece.c is 7:
-                        if isinstance(self.board_pieces[piece.r + 1][piece.c - 1], Piece) and \
-                                self.board_pieces[piece.r + 1][piece.c - 1].color is not piece.color:
-                            piece.moves.append((piece.r + 1, piece.c - 1))
+        if isinstance(p, Piece):
+            if isinstance(p, Pawn):
+                if p.color is "b":
+                    if not p.has_moved and self.board_pieces[p.r + 1][p.c] is None and \
+                            self.board_pieces[p.r + 2][p.c] is None:
+                        p.moves.append((p.r + 2, p.c))
+                    if self.board_pieces[p.r + 1][p.c] is None:
+                        p.moves.append((p.r + 1, p.c))
+                    if p.c is not 0 and p.c is not 7:
+                        if isinstance(self.board_pieces[p.r + 1][p.c + 1], Piece) and \
+                                self.board_pieces[p.r + 1][p.c + 1].color is not p.color:
+                            p.moves.append((p.r + 1, p.c + 1))
+                        if isinstance(self.board_pieces[p.r + 1][p.c - 1], Piece) and \
+                                self.board_pieces[p.r + 1][p.c - 1].color is not p.color:
+                            p.moves.append((p.r + 1, p.c - 1))
+                    if p.c is 0:
+                        if isinstance(self.board_pieces[p.r + 1][p.c + 1], Piece) and \
+                                self.board_pieces[p.r + 1][p.c + 1].color is not p.color:
+                            p.moves.append((p.r + 1, p.c + 1))
+                    if p.c is 7:
+                        if isinstance(self.board_pieces[p.r + 1][p.c - 1], Piece) and \
+                                self.board_pieces[p.r + 1][p.c - 1].color is not p.color:
+                            p.moves.append((p.r + 1, p.c - 1))
 
-                elif piece.color is "w":
-                    if not piece.has_moved and self.board_pieces[piece.r - 1][piece.c] is None and \
-                            self.board_pieces[piece.r - 2][piece.c] is None:
-                        piece.moves.append((piece.r - 2, piece.c))
-                    if self.board_pieces[piece.r - 1][piece.c] is None:
-                        piece.moves.append((piece.r - 1, piece.c))
-                    if piece.c is not 0 and piece.c is not 7:
-                        if isinstance(self.board_pieces[piece.r - 1][piece.c + 1], Piece) and \
-                                self.board_pieces[piece.r - 1][piece.c + 1].color is not piece.color:
-                            piece.moves.append((piece.r - 1, piece.c + 1))
-                        if isinstance(self.board_pieces[piece.r - 1][piece.c - 1], Piece) and \
-                                self.board_pieces[piece.r - 1][piece.c - 1].color is not piece.color:
-                            piece.moves.append((piece.r - 1, piece.c - 1))
-                    if piece.c is 0:
-                        if isinstance(self.board_pieces[piece.r - 1][piece.c + 1], Piece) and \
-                                self.board_pieces[piece.r - 1][piece.c + 1].color is not piece.color:
-                            piece.moves.append((piece.r - 1, piece.c + 1))
-                    if piece.c is 7:
-                        if isinstance(self.board_pieces[piece.r - 1][piece.c - 1], Piece) and \
-                                self.board_pieces[piece.r - 1][piece.c - 1].color is not piece.color:
-                            piece.moves.append((piece.r - 1, piece.c - 1))
-            elif isinstance(piece, Rook):
-                for c in range(piece.c + 1, 8):
-                    if self.board_pieces[piece.r][c] is None:
-                        piece.moves.append((piece.r, c))
-                    elif self.board_pieces[piece.r][c].color is not piece.color:
-                        piece.moves.append((piece.r, c))
+                elif p.color is "w":
+                    if not p.has_moved and self.board_pieces[p.r - 1][p.c] is None and \
+                            self.board_pieces[p.r - 2][p.c] is None:
+                        p.moves.append((p.r - 2, p.c))
+                    if self.board_pieces[p.r - 1][p.c] is None:
+                        p.moves.append((p.r - 1, p.c))
+                    if p.c is not 0 and p.c is not 7:
+                        if isinstance(self.board_pieces[p.r - 1][p.c + 1], Piece) and \
+                                self.board_pieces[p.r - 1][p.c + 1].color is not p.color:
+                            p.moves.append((p.r - 1, p.c + 1))
+                        if isinstance(self.board_pieces[p.r - 1][p.c - 1], Piece) and \
+                                self.board_pieces[p.r - 1][p.c - 1].color is not p.color:
+                            p.moves.append((p.r - 1, p.c - 1))
+                    if p.c is 0:
+                        if isinstance(self.board_pieces[p.r - 1][p.c + 1], Piece) and \
+                                self.board_pieces[p.r - 1][p.c + 1].color is not p.color:
+                            p.moves.append((p.r - 1, p.c + 1))
+                    if p.c is 7:
+                        if isinstance(self.board_pieces[p.r - 1][p.c - 1], Piece) and \
+                                self.board_pieces[p.r - 1][p.c - 1].color is not p.color:
+                            p.moves.append((p.r - 1, p.c - 1))
+            elif isinstance(p, Rook):
+                for c in range(p.c + 1, 8):
+                    if self.board_pieces[p.r][c] is None:
+                        p.moves.append((p.r, c))
+                    elif self.board_pieces[p.r][c].color is not p.color:
+                        p.moves.append((p.r, c))
                         break
                     else:
                         break
-                for c in range(piece.c - 1, 0, -1):
-                    if self.board_pieces[piece.r][c] is None:
-                        piece.moves.append((piece.r, c))
-                    elif self.board_pieces[piece.r][c].color is not piece.color:
-                        piece.moves.append((piece.r, c))
+                for c in range(p.c - 1, 0, -1):
+                    if self.board_pieces[p.r][c] is None:
+                        p.moves.append((p.r, c))
+                    elif self.board_pieces[p.r][c].color is not p.color:
+                        p.moves.append((p.r, c))
                         break
                     else:
                         break
-                for r in range(piece.r, 8):
-                    if self.board_pieces[r][piece.c] is None:
-                        piece.moves.append((r, piece.c))
-                    elif self.board_pieces[r][piece.c].color is not piece.color:
-                        piece.moves.append((r, piece.c))
+                for r in range(p.r, 8):
+                    if self.board_pieces[r][p.c] is None:
+                        p.moves.append((r, p.c))
+                    elif self.board_pieces[r][p.c].color is not p.color:
+                        p.moves.append((r, p.c))
                     else:
                         break
-                for r in range(piece.r, 0, -1):
-                    if self.board_pieces[r][piece.c] is None:
-                        piece.moves.append((r, piece.c))
-                    elif self.board_pieces[r][piece.c].color is not piece.color:
-                        piece.moves.append((r, piece.c))
+                for r in range(p.r, 0, -1):
+                    if self.board_pieces[r][p.c] is None:
+                        p.moves.append((r, p.c))
+                    elif self.board_pieces[r][p.c].color is not p.color:
+                        p.moves.append((r, p.c))
                     else:
                         break
-            elif isinstance(piece, Knight):
-                piece.moves.append((piece.r - 1, piece.c + 2))
-                piece.moves.append((piece.r - 1, piece.c - 2))
-                piece.moves.append((piece.r - 2, piece.c + 1))
-                piece.moves.append((piece.r - 2, piece.c - 1))
-                piece.moves.append((piece.r + 1, piece.c + 2))
-                piece.moves.append((piece.r + 1, piece.c - 2))
-                piece.moves.append((piece.r + 2, piece.c + 1))
-                piece.moves.append((piece.r + 2, piece.c - 1))
-            elif isinstance(piece, Bishop):
-                for i in range(1, 8 - piece.r):
-                    if self.board_pieces[piece.r + i][piece.c + i] is None:
-                        piece.moves.append((piece.r + i, piece.c + i))
-                    elif self.board_pieces[piece.r + i][piece.c + i].color is not piece.color:
-                        piece.moves.append((piece.r + i, piece.c + i))
-                        break
-                    else:
-                        break
-                for i in range(1, 8 - piece.r):
-                    if self.board_pieces[piece.r + i][piece.c - i] is None:
-                        piece.moves.append((piece.r + i, piece.c - i))
-                    elif self.board_pieces[piece.r + i][piece.c - i].color is not piece.color:
-                        piece.moves.append((piece.r + i, piece.c - i))
+            elif isinstance(p, Knight):
+                p.moves.append((p.r - 1, p.c + 2))
+                p.moves.append((p.r - 1, p.c - 2))
+                p.moves.append((p.r - 2, p.c + 1))
+                p.moves.append((p.r - 2, p.c - 1))
+                p.moves.append((p.r + 1, p.c + 2))
+                p.moves.append((p.r + 1, p.c - 2))
+                p.moves.append((p.r + 2, p.c + 1))
+                p.moves.append((p.r + 2, p.c - 1))
+            elif isinstance(p, Bishop):
+                for i in range(1, 8 - p.r):
+                    if self.board_pieces[p.r + i][p.c + i] is None:
+                        p.moves.append((p.r + i, p.c + i))
+                    elif self.board_pieces[p.r + i][p.c + i].color is not p.color:
+                        p.moves.append((p.r + i, p.c + i))
                         break
                     else:
                         break
-                for i in range(1, 8 - piece.r):
-                    if self.board_pieces[piece.r - i][piece.c + i] is None:
-                        piece.moves.append((piece.r - i, piece.c + i))
-                    elif self.board_pieces[piece.r - i][piece.c + i].color is not piece.color:
-                        piece.moves.append((piece.r - i, piece.c + i))
+                for i in range(1, 8 - p.r):
+                    if self.board_pieces[p.r + i][p.c - i] is None:
+                        p.moves.append((p.r + i, p.c - i))
+                    elif self.board_pieces[p.r + i][p.c - i].color is not p.color:
+                        p.moves.append((p.r + i, p.c - i))
                         break
                     else:
                         break
-                for i in range(1, 8 - piece.r):
-                    if self.board_pieces[piece.r - i][piece.c - i] is None:
-                        piece.moves.append((piece.r - i, piece.c - i))
-                    elif self.board_pieces[piece.r - i][piece.c - i].color is not piece.color:
-                        piece.moves.append((piece.r - i, piece.c - i))
+                for i in range(1, 8 - p.r):
+                    if self.board_pieces[p.r - i][p.c + i] is None:
+                        p.moves.append((p.r - i, p.c + i))
+                    elif self.board_pieces[p.r - i][p.c + i].color is not p.color:
+                        p.moves.append((p.r - i, p.c + i))
                         break
                     else:
                         break
-            elif isinstance(piece, Queen):
-                for c in range(piece.c + 1, 8):
-                    if self.board_pieces[piece.r][c] is None:
-                        piece.moves.append((piece.r, c))
-                    elif self.board_pieces[piece.r][c].color is not piece.color:
-                        piece.moves.append((piece.r, c))
+                for i in range(1, 8 - p.r):
+                    if self.board_pieces[p.r - i][p.c - i] is None:
+                        p.moves.append((p.r - i, p.c - i))
+                    elif self.board_pieces[p.r - i][p.c - i].color is not p.color:
+                        p.moves.append((p.r - i, p.c - i))
                         break
                     else:
                         break
-                for c in range(piece.c - 1, 0, -1):
-                    if self.board_pieces[piece.r][c] is None:
-                        piece.moves.append((piece.r, c))
-                    elif self.board_pieces[piece.r][c].color is not piece.color:
-                        piece.moves.append((piece.r, c))
+            elif isinstance(p, Queen):
+                for c in range(p.c + 1, 8):
+                    if self.board_pieces[p.r][c] is None:
+                        p.moves.append((p.r, c))
+                    elif self.board_pieces[p.r][c].color is not p.color:
+                        p.moves.append((p.r, c))
                         break
                     else:
                         break
-                for r in range(piece.r, 8):
-                    if self.board_pieces[r][piece.c] is None:
-                        piece.moves.append((r, piece.c))
-                    elif self.board_pieces[r][piece.c].color is not piece.color:
-                        piece.moves.append((r, piece.c))
-                    else:
-                        break
-                for r in range(piece.r, 0, -1):
-                    if self.board_pieces[r][piece.c] is None:
-                        piece.moves.append((r, piece.c))
-                    elif self.board_pieces[r][piece.c].color is not piece.color:
-                        piece.moves.append((r, piece.c))
-                    else:
-                        break
-                for i in range(1, 8 - piece.r):
-                    if self.board_pieces[piece.r + i][piece.c + i] is None:
-                        piece.moves.append((piece.r + i, piece.c + i))
-                    elif self.board_pieces[piece.r + i][piece.c + i].color is not piece.color:
-                        piece.moves.append((piece.r + i, piece.c + i))
+                for c in range(p.c - 1, 0, -1):
+                    if self.board_pieces[p.r][c] is None:
+                        p.moves.append((p.r, c))
+                    elif self.board_pieces[p.r][c].color is not p.color:
+                        p.moves.append((p.r, c))
                         break
                     else:
                         break
-                for i in range(1, 8 - piece.r):
-                    if self.board_pieces[piece.r + i][piece.c - i] is None:
-                        piece.moves.append((piece.r + i, piece.c - i))
-                    elif self.board_pieces[piece.r + i][piece.c - i].color is not piece.color:
-                        piece.moves.append((piece.r + i, piece.c - i))
+                for r in range(p.r, 8):
+                    if self.board_pieces[r][p.c] is None:
+                        p.moves.append((r, p.c))
+                    elif self.board_pieces[r][p.c].color is not p.color:
+                        p.moves.append((r, p.c))
+                    else:
+                        break
+                for r in range(p.r, 0, -1):
+                    if self.board_pieces[r][p.c] is None:
+                        p.moves.append((r, p.c))
+                    elif self.board_pieces[r][p.c].color is not p.color:
+                        p.moves.append((r, p.c))
+                    else:
+                        break
+                for i in range(1, 8 - p.r):
+                    if self.board_pieces[p.r + i][p.c + i] is None:
+                        p.moves.append((p.r + i, p.c + i))
+                    elif self.board_pieces[p.r + i][p.c + i].color is not p.color:
+                        p.moves.append((p.r + i, p.c + i))
                         break
                     else:
                         break
-                for i in range(1, 8 - piece.r):
-                    if self.board_pieces[piece.r - i][piece.c + i] is None:
-                        piece.moves.append((piece.r - i, piece.c + i))
-                    elif self.board_pieces[piece.r - i][piece.c + i].color is not piece.color:
-                        piece.moves.append((piece.r - i, piece.c + i))
+                for i in range(1, 8 - p.r):
+                    if self.board_pieces[p.r + i][p.c - i] is None:
+                        p.moves.append((p.r + i, p.c - i))
+                    elif self.board_pieces[p.r + i][p.c - i].color is not p.color:
+                        p.moves.append((p.r + i, p.c - i))
                         break
                     else:
                         break
-                for i in range(1, 8 - piece.r):
-                    if self.board_pieces[piece.r - i][piece.c - i] is None:
-                        piece.moves.append((piece.r - i, piece.c - i))
-                    elif self.board_pieces[piece.r - i][piece.c - i].color is not piece.color:
-                        piece.moves.append((piece.r - i, piece.c - i))
+                for i in range(1, 8 - p.r):
+                    if self.board_pieces[p.r - i][p.c + i] is None:
+                        p.moves.append((p.r - i, p.c + i))
+                    elif self.board_pieces[p.r - i][p.c + i].color is not p.color:
+                        p.moves.append((p.r - i, p.c + i))
                         break
                     else:
                         break
-            elif isinstance(piece, King):
-                if not self.threatened(piece.color, piece.r - 1, piece.c - 1):
-                    piece.moves.append((piece.r - 1, piece.c - 1))
-                if not self.threatened(piece.color, piece.r - 1, piece.c):
-                    piece.moves.append((piece.r - 1, piece.c))
-                if not self.threatened(piece.color, piece.r - 1, piece.c + 1):
-                    piece.moves.append((piece.r - 1, piece.c + 1))
-                if not self.threatened(piece.color, piece.r, piece.c - 1):
-                    piece.moves.append((piece.r, piece.c - 1))
-                if not self.threatened(piece.color, piece.r, piece.c + 1):
-                    piece.moves.append((piece.r, piece.c + 1))
-                if not self.threatened(piece.color, piece.r + 1, piece.c - 1):
-                    piece.moves.append((piece.r + 1, piece.c - 1))
-                if not self.threatened(piece.color, piece.r + 1, piece.c):
-                    piece.moves.append((piece.r + 1, piece.c))
-                if not self.threatened(piece.color, piece.r + 1, piece.c + 1):
-                    piece.moves.append((piece.r + 1, piece.c + 1))
-                if not piece.has_moved and not self.threatened(piece.color, piece.r, piece.c) and \
-                        isinstance(self.board_pieces[piece.r][0], Rook) and \
-                        self.board_pieces[piece.r][0].color is piece.color and not \
-                        self.board_pieces[piece.r][0].has_moved and \
-                        self.board_pieces[piece.r][1] is None and \
-                        self.board_pieces[piece.r][2] is None and \
-                        self.board_pieces[piece.r][3] is None:
-                    piece.moves.append((piece.r, piece.c - 2))
-                if not piece.has_moved and not self.threatened(piece.color, piece.r, piece.c) and \
-                        isinstance(self.board_pieces[piece.r][7], Rook) and \
-                        self.board_pieces[piece.r][7].color is piece.color and not \
-                        self.board_pieces[piece.r][7].has_moved and \
-                        self.board_pieces[piece.r][6] is None and \
-                        self.board_pieces[piece.r][5] is None and \
-                        self.board_pieces[piece.r][4] is None:
-                    piece.moves.append((piece.r, piece.c - 2))
-            for position in list(piece.moves):
+                for i in range(1, 8 - p.r):
+                    if self.board_pieces[p.r - i][p.c - i] is None:
+                        p.moves.append((p.r - i, p.c - i))
+                    elif self.board_pieces[p.r - i][p.c - i].color is not p.color:
+                        p.moves.append((p.r - i, p.c - i))
+                        break
+                    else:
+                        break
+            elif isinstance(p, King):
+                if not self.threatened(p.color, p.r - 1, p.c - 1):
+                    p.moves.append((p.r - 1, p.c - 1))
+                if not self.threatened(p.color, p.r - 1, p.c):
+                    p.moves.append((p.r - 1, p.c))
+                if not self.threatened(p.color, p.r - 1, p.c + 1):
+                    p.moves.append((p.r - 1, p.c + 1))
+                if not self.threatened(p.color, p.r, p.c - 1):
+                    p.moves.append((p.r, p.c - 1))
+                if not self.threatened(p.color, p.r, p.c + 1):
+                    p.moves.append((p.r, p.c + 1))
+                if not self.threatened(p.color, p.r + 1, p.c - 1):
+                    p.moves.append((p.r + 1, p.c - 1))
+                if not self.threatened(p.color, p.r + 1, p.c):
+                    p.moves.append((p.r + 1, p.c))
+                if not self.threatened(p.color, p.r + 1, p.c + 1):
+                    p.moves.append((p.r + 1, p.c + 1))
+                if not p.has_moved and not self.threatened(p.color, p.r, p.c) and \
+                        isinstance(self.board_pieces[p.r][0], Rook) and \
+                        self.board_pieces[p.r][0].color is p.color and not \
+                        self.board_pieces[p.r][0].has_moved and \
+                        self.board_pieces[p.r][1] is None and \
+                        self.board_pieces[p.r][2] is None and \
+                        self.board_pieces[p.r][3] is None:
+                    p.moves.append((p.r, p.c - 2))
+                if not p.has_moved and not self.threatened(p.color, p.r, p.c) and \
+                        isinstance(self.board_pieces[p.r][7], Rook) and \
+                        self.board_pieces[p.r][7].color is p.color and not \
+                        self.board_pieces[p.r][7].has_moved and \
+                        self.board_pieces[p.r][6] is None and \
+                        self.board_pieces[p.r][5] is None and \
+                        self.board_pieces[p.r][4] is None:
+                    p.moves.append((p.r, p.c - 2))
+            for position in list(p.moves):
                 r, c = position
                 if r < 0 or c < 0 or r > 7 or c > 7:
-                    piece.moves.remove(position)
-                elif self.board_pieces[r][c] is not None and self.board_pieces[r][c].color is piece.color:
-                    piece.moves.remove(position)
-            return piece.moves
+                    p.moves.remove(position)
+                elif self.board_pieces[r][c] is not None and self.board_pieces[r][c].color is p.color:
+                    p.moves.remove(position)
+            return p.moves
         return None
 
     def populate(self):
@@ -273,10 +275,10 @@ class Board:
         for i in range(4):
             self.board_pieces.append(empty.copy())
 
-        for piece in back:
-            piece.color = "w"
-        for piece in front:
-            piece.color = "w"
+        for p in back:
+            p.color = "w"
+        for p in front:
+            p.color = "w"
 
         self.board_pieces.append(copy.deepcopy(front))
         self.board_pieces.append(copy.deepcopy(back))
@@ -286,16 +288,16 @@ class Board:
                 if self.board_pieces[r][c] is not None:
                     self.board_pieces[r][c].r = r
                     self.board_pieces[r][c].c = c
+                    self.pieces.append(self.board_pieces[r][c])
 
-        for row in self.board_pieces:
-            for piece in row:
-                self.set_moves(piece)
+        for p in self.pieces:
+            self.set_moves(p)
 
     def __str__(self):
         str_board = ""
-        for row in self.board_pieces:
-            for piece in row:
-                str_board += str(piece) + " "
+        for r in self.board_pieces:
+            for p in r:
+                str_board += str(p) + " "
             str_board += "\n"
         return str_board
 

@@ -1,10 +1,15 @@
 class Piece:
     def __init__(self, color):
         self.color = color
-        self.position = None
+        self.r = None
+        self.c = None
+        self.moves = []
+        self.has_moved = False
 
-    def move(self, position):
-        self.position = position
+    def move(self, r, c):
+        self.has_moved = True
+        self.r = r
+        self.c = c
 
     def __str__(self):
         return self.color
@@ -53,6 +58,13 @@ class Queen(Piece):
 class King(Piece):
     def __init__(self, color):
         super(King, self).__init__(color)
+
+    def move(self, r, c):
+        self.has_moved = True
+        if abs(c - self.c) > 1:
+            print("castle")
+        self.r = r
+        self.c = c
 
     def __str__(self):
         return self.color + ".kg"

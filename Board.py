@@ -272,16 +272,22 @@ class Board:
                 self.board_pieces[p.r][0].has_moved and \
                 self.board_pieces[p.r][1] is None and \
                 self.board_pieces[p.r][2] is None and \
-                self.board_pieces[p.r][3] is None:
+                self.board_pieces[p.r][3] is None and not \
+                self.threatened(p.color, p.r, 2) and not \
+                self.threatened(p.color, p.r, 3):
             p.moves.add((p.r, p.c - 2))
+            # self.board_pieces[p.r][0].moves.add(p.r, 2)
         if not p.has_moved and not self.threatened(p.color, p.r, p.c) and \
                 isinstance(self.board_pieces[p.r][7], Rook) and \
                 self.board_pieces[p.r][7].color is p.color and not \
                 self.board_pieces[p.r][7].has_moved and \
                 self.board_pieces[p.r][6] is None and \
                 self.board_pieces[p.r][5] is None and \
-                self.board_pieces[p.r][4] is None:
+                self.board_pieces[p.r][4] is None and not \
+                self.threatened(p.color, p.r, 6) and not \
+                self.threatened(p.color, p.r, 5):
             p.moves.add((p.r, p.c - 2))
+            # self.board_pieces[p.r][7].moves.add(p.r, 5)
 
     def set_moves(self, p):
         p.moves.clear()
@@ -371,11 +377,24 @@ class Board:
     def move(self, a, b):
         r1, c1 = a
         r2, c2 = b
-        p = self.board_pieces[r1][c1]
-        if p is None:
+        if self.board_pieces[r1][c1] is None:
             raise Exception("There is no piece at " + self.positions[r1][c1])
+        p = self.board_pieces[r1][c1]
         if b not in p.moves:
             raise Exception(self.positions[r1][c1] + " cannot move to " + self.positions[r2][c2])
+        if isinstance(p, King) and not p.has_moved and abs(c2 - c1) > 1:
+            if c2 is 2 and isinstance(self.board_pieces[p.r][0], Rook) and not \
+                    self.board_pieces[p.r][0].has_moved:
+                self.board_pieces[p.r][0].has_moved = True
+                self.board_pieces[p.r][0].c = 3
+                self.board_pieces[p.r][0].position = (p.r, 3)
+                print("O-O-O")
+            elif c2 is 6 and isinstance(self.board_pieces[p.r][7], Rook) and not \
+                    self.board_pieces[p.r][7].has_moved:
+                self.board_pieces[p.r][0].has_moved = True
+                self.board_pieces[p.r][0].c = 5
+                self.board_pieces[p.r][0].position = (p.r, 5)
+                print("O-O")
         p.has_moved = True
         p.r, p.c = b
         p.position = b
@@ -404,6 +423,7 @@ if __name__ == "__main__":
     board.move(e2, e4)
     board.move(d7, d5)
     board.move(e4, d5)
+    #board.move(a1, a2)
     # for row in board.board_pieces:
     #     for piece in row:
     #         if piece is not None:

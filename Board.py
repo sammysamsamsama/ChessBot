@@ -76,11 +76,16 @@ h8 = (0, 7)
 
 
 class Board:
+    # constructor
     def __init__(self):
+        # list of pieces
         self.pieces = []
+        # matrix of board
         self.board_pieces = []
+        # positions of board
         self.positions = []
 
+        # fill out positions
         columns = ["a", "b", "c", "d", "e", "f", "g", "h"]
         for r in range(7, -1, -1):
             position_row = []
@@ -88,14 +93,15 @@ class Board:
                 position_row.append(columns[c] + str(r + 1))
             self.positions.append(position_row)
 
+    # would a piece of this color be threatened at this position
     def threatened(self, color, r, c):
-        # is this position threatened by a piece not this color
         for rw in self.board_pieces:
             for p in rw:
                 if p is not None and p.color is not color and (r, c) in p.moves:
                     return True
         return False
 
+    # clear pieces and board
     def clear(self):
         self.pieces.clear()
         self.board_pieces.clear()
@@ -106,17 +112,23 @@ class Board:
             self.board_pieces.append(row)
             del row
 
+    # set moves for all pieces
     def set_all_moves(self):
         for p in self.pieces:
             self.set_moves(p)
 
+    # set pawn moves
     def set_pawn(self, p):
+        # for black pawn
         if p.color is "b":
+            # can it move twice
             if not p.has_moved and self.board_pieces[p.r + 1][p.c] is None and \
                     self.board_pieces[p.r + 2][p.c] is None:
                 p.moves.add((p.r + 2, p.c))
+            # can it move forward 1
             if self.board_pieces[p.r + 1][p.c] is None:
                 p.moves.add((p.r + 1, p.c))
+            # if not at edge of board, can it capture diagonally forward 1
             if p.c is not 0 and p.c is not 7:
                 if isinstance(self.board_pieces[p.r + 1][p.c + 1], Piece) and \
                         self.board_pieces[p.r + 1][p.c + 1].color is not p.color:
@@ -124,6 +136,7 @@ class Board:
                 if isinstance(self.board_pieces[p.r + 1][p.c - 1], Piece) and \
                         self.board_pieces[p.r + 1][p.c - 1].color is not p.color:
                     p.moves.add((p.r + 1, p.c - 1))
+            # at the edge, can it capture diagonally forward 1
             if p.c is 0:
                 if isinstance(self.board_pieces[p.r + 1][p.c + 1], Piece) and \
                         self.board_pieces[p.r + 1][p.c + 1].color is not p.color:
@@ -132,12 +145,16 @@ class Board:
                 if isinstance(self.board_pieces[p.r + 1][p.c - 1], Piece) and \
                         self.board_pieces[p.r + 1][p.c - 1].color is not p.color:
                     p.moves.add((p.r + 1, p.c - 1))
+        # for white pawn
         elif p.color is "w":
+            # can it move twice
             if not p.has_moved and self.board_pieces[p.r - 1][p.c] is None and \
                     self.board_pieces[p.r - 2][p.c] is None:
                 p.moves.add((p.r - 2, p.c))
+            # can it move forward 1
             if self.board_pieces[p.r - 1][p.c] is None:
                 p.moves.add((p.r - 1, p.c))
+            # if not at edge of board, can it capture diagonally forward 1
             if p.c is not 0 and p.c is not 7:
                 if isinstance(self.board_pieces[p.r - 1][p.c + 1], Piece) and \
                         self.board_pieces[p.r - 1][p.c + 1].color is not p.color:
@@ -145,6 +162,7 @@ class Board:
                 if isinstance(self.board_pieces[p.r - 1][p.c - 1], Piece) and \
                         self.board_pieces[p.r - 1][p.c - 1].color is not p.color:
                     p.moves.add((p.r - 1, p.c - 1))
+            # at the edge, can it capture diagonally forward 1
             if p.c is 0:
                 if isinstance(self.board_pieces[p.r - 1][p.c + 1], Piece) and \
                         self.board_pieces[p.r - 1][p.c + 1].color is not p.color:
@@ -154,50 +172,65 @@ class Board:
                         self.board_pieces[p.r - 1][p.c - 1].color is not p.color:
                     p.moves.add((p.r - 1, p.c - 1))
 
+    # set rook moves
     def set_rook(self, p):
+        # how far can it move right
         for i in range(1, 8):
+            # until it hits the edge
             if p.c + i > 7:
                 break
             if self.board_pieces[p.r][p.c + i] is None:
                 p.moves.add((p.r, p.c + i))
+            # until it finds an enemy
             elif self.board_pieces[p.r][p.c + i].color is not p.color:
                 p.moves.add((p.r, p.c + i))
                 break
             else:
                 break
+        # how far can it move left
         for i in range(1, 8):
+            # until it hits the edge
             if p.c - i < 0:
                 break
             if self.board_pieces[p.r][p.c - i] is None:
                 p.moves.add((p.r, p.c + i))
+            # until it finds an enemy
             elif self.board_pieces[p.r][p.c - i].color is not p.color:
                 p.moves.add((p.r, p.c - i))
                 break
             else:
                 break
+        # how far can it move down
         for i in range(1, 8):
+            # before it hits the bottom
             if p.r + i > 7:
                 break
             if self.board_pieces[p.r + i][p.c] is None:
                 p.moves.add((p.r + i, p.c))
+            # until it finds an enemy
             elif self.board_pieces[p.r + i][p.c].color is not p.color:
                 p.moves.add((p.r + i, p.c))
                 break
             else:
                 break
+        # how far can it move up
         for i in range(1, 8):
+            # before it hits the top
             if p.r - i < 0:
                 break
             if self.board_pieces[p.r - i][p.c] is None:
                 p.moves.add((p.r - i, p.c))
+            # until it finds an enemy
             elif self.board_pieces[p.r - i][p.c].color is not p.color:
                 p.moves.add((p.r - i, p.c))
                 break
             else:
                 break
 
+    # set knight moves
     def set_knight(self, p):
-        # all illegal moves removed at the end
+        # all illegal moves checked and removed in set_moves()
+        # add all combinations of 2 and 1 away from p.position
         p.moves.add((p.r - 1, p.c + 2))
         p.moves.add((p.r - 1, p.c - 2))
         p.moves.add((p.r - 2, p.c + 1))
@@ -207,49 +240,65 @@ class Board:
         p.moves.add((p.r + 2, p.c + 1))
         p.moves.add((p.r + 2, p.c - 1))
 
+    # set bishop moves
     def set_bishop(self, p):
+        # how far can it move down and right
         for i in range(1, 8):
+            # before it hits an edge
             if p.r + i > 7 or p.c + i > 7:
                 break
             if self.board_pieces[p.r + i][p.c + i] is None:
                 p.moves.add((p.r + i, p.c + i))
+            # until it finds an enemy
             elif self.board_pieces[p.r + i][p.c + i].color is not p.color:
                 p.moves.add((p.r + i, p.c + i))
                 break
             else:
                 break
+        # how far can it move up and right
         for i in range(1, 8):
-            if p.r + i > 7 or p.c - i < 0:
-                break
-            if self.board_pieces[p.r + i][p.c - i] is None:
-                p.moves.add((p.r + i, p.c - i))
-            elif self.board_pieces[p.r + i][p.c - i].color is not p.color:
-                p.moves.add((p.r + i, p.c - i))
-                break
-            else:
-                break
-        for i in range(1, 8):
+            # before it hits an edge
             if p.r - i < 0 or p.c + i > 7:
                 break
             if self.board_pieces[p.r - i][p.c + i] is None:
                 p.moves.add((p.r - i, p.c + i))
+            # until it finds an enemy
             elif self.board_pieces[p.r - i][p.c + i].color is not p.color:
                 p.moves.add((p.r - i, p.c + i))
                 break
             else:
                 break
+        # how far can it move up and left
         for i in range(1, 8):
+            # before it hits an edge
             if p.r - i < 0 or p.c - i < 0:
                 break
             if self.board_pieces[p.r - i][p.c - i] is None:
                 p.moves.add((p.r - i, p.c - i))
+            # until it finds an enemy
             elif self.board_pieces[p.r - i][p.c - i].color is not p.color:
                 p.moves.add((p.r - i, p.c - i))
                 break
             else:
                 break
+        # how far can it move down and left
+        for i in range(1, 8):
+            # before it hits an edge
+            if p.r + i > 7 or p.c - i < 0:
+                break
+            if self.board_pieces[p.r + i][p.c - i] is None:
+                p.moves.add((p.r + i, p.c - i))
+            # until it finds an enemy
+            elif self.board_pieces[p.r + i][p.c - i].color is not p.color:
+                p.moves.add((p.r + i, p.c - i))
+                break
+            else:
+                break
 
+    # set king moves
     def set_king(self, p):
+        # all illegal moves checked and removed in set_moves()
+        # add 8 closest positions
         if not self.threatened(p.color, p.r - 1, p.c - 1):
             p.moves.add((p.r - 1, p.c - 1))
         if not self.threatened(p.color, p.r - 1, p.c):
@@ -266,30 +315,27 @@ class Board:
             p.moves.add((p.r + 1, p.c))
         if not self.threatened(p.color, p.r + 1, p.c + 1):
             p.moves.add((p.r + 1, p.c + 1))
+        # can it castle left
         if not p.has_moved and not self.threatened(p.color, p.r, p.c) and \
                 isinstance(self.board_pieces[p.r][0], Rook) and \
                 self.board_pieces[p.r][0].color is p.color and not \
                 self.board_pieces[p.r][0].has_moved and \
                 self.board_pieces[p.r][1] is None and \
                 self.board_pieces[p.r][2] is None and \
-                self.board_pieces[p.r][3] is None and not \
-                self.threatened(p.color, p.r, 2) and not \
-                self.threatened(p.color, p.r, 3):
+                self.board_pieces[p.r][3] is None:
             p.moves.add((p.r, p.c - 2))
-            # self.board_pieces[p.r][0].moves.add(p.r, 2)
+        # can it castle right
         if not p.has_moved and not self.threatened(p.color, p.r, p.c) and \
                 isinstance(self.board_pieces[p.r][7], Rook) and \
                 self.board_pieces[p.r][7].color is p.color and not \
                 self.board_pieces[p.r][7].has_moved and \
                 self.board_pieces[p.r][6] is None and \
                 self.board_pieces[p.r][5] is None and \
-                self.board_pieces[p.r][4] is None and not \
-                self.threatened(p.color, p.r, 6) and not \
-                self.threatened(p.color, p.r, 5):
+                self.board_pieces[p.r][4] is None:
             p.moves.add((p.r, p.c - 2))
-            # self.board_pieces[p.r][7].moves.add(p.r, 5)
 
     def set_moves(self, p):
+        # clear current moves
         p.moves.clear()
         """
 
@@ -309,15 +355,19 @@ class Board:
                 self.set_bishop(p)
             elif isinstance(p, King):
                 self.set_king(p)
+            # check illegal moves
             for position in list(p.moves):
                 r, c = position
+                # if r or c lay outside the board, remove position from moves
                 if r < 0 or c < 0 or r > 7 or c > 7:
                     p.moves.remove(position)
+                # if the piece color at [r][c] is p.color, remove position from moves
                 elif self.board_pieces[r][c] is not None and self.board_pieces[r][c].color is p.color:
                     p.moves.remove(position)
             return p.moves
         return None
 
+    # set the board
     def populate(self):
         # clear board
         self.pieces.clear()
@@ -372,39 +422,50 @@ class Board:
                     p.position = (r, c)
                     self.pieces.append(p)
 
+        # assign the first moves
         self.set_all_moves()
 
+    # move a to b
     def move(self, a, b):
+        # extract position coordinates
         r1, c1 = a
         r2, c2 = b
-        if self.board_pieces[r1][c1] is None:
-            raise Exception("There is no piece at " + self.positions[r1][c1])
+
+        # add pointer to piece p at a
         p = self.board_pieces[r1][c1]
+
+        # check if p is really a piece
+        if p is None:
+            raise Exception("There is no piece at " + self.positions[r1][c1])
+
+        # check if p can move to b
         if b not in p.moves:
             raise Exception(self.positions[r1][c1] + " cannot move to " + self.positions[r2][c2])
-        if isinstance(p, King) and not p.has_moved and abs(c2 - c1) > 1:
-            if c2 is 2 and isinstance(self.board_pieces[p.r][0], Rook) and not \
-                    self.board_pieces[p.r][0].has_moved:
-                self.board_pieces[p.r][0].has_moved = True
-                self.board_pieces[p.r][0].c = 3
-                self.board_pieces[p.r][0].position = (p.r, 3)
-                print("O-O-O")
-            elif c2 is 6 and isinstance(self.board_pieces[p.r][7], Rook) and not \
-                    self.board_pieces[p.r][7].has_moved:
-                self.board_pieces[p.r][0].has_moved = True
-                self.board_pieces[p.r][0].c = 5
-                self.board_pieces[p.r][0].position = (p.r, 5)
-                print("O-O")
+
+        # p will move
         p.has_moved = True
+
+        # reassign position variables for p
         p.r, p.c = b
         p.position = b
+
+        # print( a to b )
         print(self.positions[r1][c1] + " to " + self.positions[r2][c2])
+
+        # check if capture takes place
         if self.board_pieces[r2][c2] is not None:
             print(str(p) + " takes " + str(board.board_pieces[r2][c2]))
+            self.pieces.remove(self.board_pieces[r2][c2])
             self.board_pieces[r2][c2] = None
+
+        # clear a on board, set b on board to p
         self.board_pieces[r1][c1] = None
         self.board_pieces[r2][c2] = p
+
+        # recheck all movement possibilities
         self.set_all_moves()
+
+        # print board
         print(str(self))
 
     def __str__(self):
@@ -423,7 +484,6 @@ if __name__ == "__main__":
     board.move(e2, e4)
     board.move(d7, d5)
     board.move(e4, d5)
-    #board.move(a1, a2)
     # for row in board.board_pieces:
     #     for piece in row:
     #         if piece is not None:
